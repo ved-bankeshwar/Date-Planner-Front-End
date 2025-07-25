@@ -55,7 +55,7 @@ export default function AuthPage() {
       </div>
 
       {/* Floating hearts from interactions */}
-      {floatingHearts.map((heart) => (
+      {/* {floatingHearts.map((heart) => (
         <div
           key={heart.id}
           className="absolute pointer-events-none animate-ping"
@@ -67,7 +67,7 @@ export default function AuthPage() {
         >
           💕
         </div>
-      ))}
+      ))} */}
 
       <Card className="w-full max-w-md glass-effect border-pink-200 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-purple-500/5 to-rose-500/5" />

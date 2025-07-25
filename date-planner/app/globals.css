@@ -420,8 +420,8 @@
   /* Title Particles */
   .title-particle {
     position: absolute;
-    width: 2px;
-    height: 2px;
+    width: 5px;
+    height: 5px;
     background: rgba(173, 20, 87, 0.4);
     border-radius: 50%;
     animation: floatTitleParticle 8s infinite ease-in-out;

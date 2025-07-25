@@ -99,12 +99,14 @@ export default function FormPage() {
     }, 2000)
   }
 
+
+
   const currentQ = questions[currentQuestion]
   const hasAnswer = answers[currentQ.id]
   const isLastQuestion = currentQuestion === questions.length - 1
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-rose-100 p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-purple-200 to-rose-200 p-4 relative overflow-hidden">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
         {Array.from({ length: 15 }).map((_, i) => (
@@ -124,7 +126,7 @@ export default function FormPage() {
       </div>
 
       {/* Floating hearts from interactions */}
-      {floatingHearts.map((heart) => (
+      {/* {floatingHearts.map((heart) => (
         <div
           key={heart.id}
           className="fixed pointer-events-none z-50"
@@ -136,21 +138,21 @@ export default function FormPage() {
         >
           💕
         </div>
-      ))}
+      ))} */}
 
       <div className="max-w-2xl mx-auto relative z-10">
         {/* Progress bar */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center mb-2 bg-white/20">
             <span className="text-sm font-medium text-gray-600">
               Question {currentQuestion + 1} of {questions.length}
             </span>
             <span className="text-sm font-medium text-pink-600">{Math.round(progress)}% Complete</span>
           </div>
-          <Progress value={progress} className="h-2" />
+          <Progress value={progress} className="h-2 bg-white/20" />
         </div>
 
-        <Card className="glass-effect border-pink-200 shadow-2xl relative overflow-hidden">
+        <Card className="glass-effect bg-white/60 border-pink-50 shadow-2xl relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-purple-500/5 to-rose-500/5" />
 
           <CardHeader className="text-center relative z-10">
