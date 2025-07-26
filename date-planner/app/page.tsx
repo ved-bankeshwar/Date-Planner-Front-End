@@ -11,8 +11,14 @@ import { auth } from "@/lib/firebaseAuth"
 import Image from "next/image"
 import LocationButton from "@/components/location_btn"
 
+import gsap from "gsap"
+import { ScrollTrigger } from "gsap/ScrollTrigger"
+import { useRef } from "react"
+
 export default function LandingPage() {
   const router = useRouter();
+  // Register GSAP plugin
+  gsap.registerPlugin(ScrollTrigger)
   // Smooth scroll to Contact Us section
   const handleContactScroll = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
@@ -23,6 +29,98 @@ export default function LandingPage() {
   };
   const [isLoaded, setIsLoaded] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
+
+  // Refs for all main sections/components
+  const heroRef = useRef<HTMLDivElement>(null)
+  const getStartedRef = useRef<HTMLDivElement>(null)
+  const cardRefs = [useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null), useRef<HTMLDivElement>(null)]
+  const contactLeftRef = useRef<HTMLDivElement>(null)
+  const contactFormRef = useRef<HTMLDivElement>(null)
+  const testimonialsRef = useRef<HTMLDivElement>(null)
+
+  // Optimized GSAP ScrollTrigger for only key content blocks
+  useEffect(() => {
+    if (!isLoaded) return;
+    // Feature cards (slide from sides)
+    cardRefs.forEach((ref, idx) => {
+      if (ref.current) {
+        gsap.fromTo(
+          ref.current,
+          { x: idx === 1 ? 0 : (idx === 0 ? -100 : 100), opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.8,
+            delay: 0.1 * idx,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: ref.current,
+              start: "top 85%",
+              once: true
+            }
+          }
+        )
+      }
+    })
+    // Contact left (slide from left)
+    if (contactLeftRef.current) {
+      gsap.fromTo(
+        contactLeftRef.current,
+        { x: -60, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: contactLeftRef.current,
+            start: "top 85%",
+            once: true
+          }
+        }
+      )
+    }
+    // Contact form (slide from right)
+    if (contactFormRef.current) {
+      gsap.fromTo(
+        contactFormRef.current,
+        { x: 60, opacity: 0 },
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: contactFormRef.current,
+            start: "top 85%",
+            once: true
+          }
+        }
+      )
+    }
+    // Testimonials (fade in up)
+    if (testimonialsRef.current) {
+      gsap.fromTo(
+        testimonialsRef.current,
+        { y: 40, opacity: 0 },
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: testimonialsRef.current,
+            start: "top 90%",
+            once: true
+          }
+        }
+      )
+    }
+    // Cleanup
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill())
+    }
+  }, [isLoaded])
 
   // Typewriter effect for hero text
   const line1 = "A  dating concierge....kinda";
@@ -124,32 +222,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen bg-gradient-to-br from-pink-400 via-rose-400 to-pink-500 flex items-center justify-start overflow-hidden">
-        {/* Floating Elements */}
-        <div className="absolute inset-0">
-          {Array.from({ length: 20 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute animate-float opacity-20"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${i * 0.5}s`,
-                animationDuration: `${3 + Math.random() * 2}s`,
-              }}
-            >
-              {i % 4 === 0 ? (
-                <Heart className="text-white" size={16} />
-              ) : i % 4 === 1 ? (
-                <Sparkles className="text-white" size={14} />
-              ) : i % 4 === 2 ? (
-                <Star className="text-white" size={12} />
-              ) : (
-                <div className="w-2 h-2 bg-white rounded-full" />
-              )}
-            </div>
-          ))}
-        </div>
+      <section ref={heroRef} className="relative min-h-screen bg-gradient-to-br from-pink-400 via-rose-400 to-pink-500 flex items-center justify-start overflow-hidden">
 
         <div className="relative z-10  grid lg:grid-cols-2 gap-12 items-center justify-start px-20 w-full">
           <div className="text-center lg:text-left">
@@ -216,7 +289,7 @@ export default function LandingPage() {
       </div>
 
       {/* Get Started Section */}
-      <section id="get-started" className="bg-gradient-to-br from-orange-300 to-yellow-400 py-20 -mt-1">
+      <section id="get-started" ref={getStartedRef} className="bg-gradient-to-br from-orange-300 to-yellow-400 py-20 -mt-1">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-5xl font-bold text-gray-900 mb-8">
             Ready to Find
@@ -230,7 +303,7 @@ export default function LandingPage() {
           </p>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+            <div ref={cardRefs[0]} className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl opacity-0 will-change-transform">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="text-orange-500" size={32} />
               </div>
@@ -238,7 +311,7 @@ export default function LandingPage() {
               <p className="text-gray-800">Get started in just 5 minutes with our simple questionnaire</p>
             </div>
 
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+            <div ref={cardRefs[1]} className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl opacity-0 will-change-transform">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="text-orange-500" size={32} />
               </div>
@@ -246,7 +319,7 @@ export default function LandingPage() {
               <p className="text-gray-800">Our AI creates personalized date plans just for you</p>
             </div>
 
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
+            <div ref={cardRefs[2]} className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl opacity-0 will-change-transform">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="text-orange-500" size={32} />
               </div>
@@ -276,7 +349,7 @@ export default function LandingPage() {
           <h2 className="text-5xl font-bold text-white text-center mb-16">Contact Us</h2>
 
           <div className="grid lg:grid-cols-2 gap-12 items-start">
-            <div>
+            <div ref={contactLeftRef} className="opacity-0 will-change-transform">
               <h3 className="text-3xl font-bold text-white mb-8">Get in Touch</h3>
               <p className="text-xl text-white/90 mb-8 leading-relaxed">
                 Have questions about our service? Want to share feedback? We'd love to hear from you!
@@ -315,7 +388,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <Card className="bg-white rounded-3xl shadow-xl overflow-hidden">
+            <Card ref={contactFormRef} className="bg-white rounded-3xl shadow-xl overflow-hidden opacity-0 will-change-transform">
               <CardContent className="p-8">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">Send us a Message</h3>
                 <form className="space-y-6">
@@ -361,7 +434,7 @@ export default function LandingPage() {
       </div>
 
       {/* Testimonials Section - Now at the end */}
-      <section className="bg-white py-20 -mt-1">
+      <section ref={testimonialsRef} className="bg-white py-20 -mt-1 opacity-0 will-change-transform">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-12">What Our Users Say</h2>
           <div className="bg-gradient-to-br from-pink-100 to-rose-100 rounded-3xl p-12">
