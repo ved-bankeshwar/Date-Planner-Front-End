@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/app/ui/button"
 import { Card, CardContent } from "@/app/ui/card"
 import { Heart, Sparkles, Star, Users, Coffee, MapPin } from "lucide-react"
@@ -13,7 +13,7 @@ import LocationButton from "@/components/location_btn"
 
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { useRef } from "react"
+
 
 export default function LandingPage() {
   const router = useRouter();
@@ -29,6 +29,7 @@ export default function LandingPage() {
   };
   const [isLoaded, setIsLoaded] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
+
 
   // Refs for all main sections/components
   const heroRef = useRef<HTMLDivElement>(null)
@@ -188,9 +189,9 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden ">
       {/* Navigation with wavy bottom */}
-      <nav className="fixed top-0 w-full bg-white/90 backdrop-blur-md z-50 border-b border-pink-100">
+      <nav className="fixed top-0 left-0 w-full bg-white/20 backdrop-blur-md z-50 border-b border-pink-100 px-10 shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
             <div className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-rose-600 bg-clip-text text-transparent">
@@ -212,55 +213,49 @@ export default function LandingPage() {
               </Link>
             </div>
           </div>
-        </div>
-        {/* Wavy bottom border */}
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden">
-          <svg viewBox="0 0 1200 20" className="w-full h-3 fill-current text-white/90" preserveAspectRatio="none">
-            <path d="M0,10 C300,0 600,20 900,10 C1050,5 1150,15 1200,10 L1200,20 L0,20 Z"></path>
-          </svg>
-        </div>
+        </div>  
+        
       </nav>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative min-h-screen bg-gradient-to-br from-pink-400 via-rose-400 to-pink-500 flex items-center justify-start overflow-hidden">
+      <section ref={heroRef} className="relative min-h-screen bg-gradient-to-b from-pink-400 via-rose-400 to-pink-500 flex items-center justify-start overflow-hidden h-[20vw]">
 
-        <div className="relative z-10  grid lg:grid-cols-2 gap-12 items-center justify-start px-20 w-full">
-          <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-8 transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl cursor-pointer">
+        <div className="relative z-10 h-full min-h-[700px] grid lg:grid-cols-2 gap-20 items-center justify-start px-32 w-full">
+          <div className="text-center lg:text-left space-y-10 -mt-16">
+            {/* <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-8 transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl cursor-pointer">
               <Sparkles className="text-white" size={16} />
               <span className="text-white font-medium">AI-Powered Date Planning</span>
-            </div>
+            </div>  */}
 
-            <h1 className="text-8xl lg:text-9xl text-white mb-6 leading-tight font-thin flex flex-col">
-              <div className=" bg-clip-text text-white font-bold indie-flower-regular text-5xl flex-[1.5] flex items-end px-5">
+            <h1 className="text-9xl lg:text-[10rem] text-white mb-10 leading-tight font-thin flex flex-col">
+              <div className="bg-clip-text text-white font-bold indie-flower-regular text-3xl lg:text-5xl flex-[1.5] flex items-end ">
                 meet me
               </div>
-              
-              <div className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent indie-flower-regular flex-[1.5] flex items-start justify-start">
+              <div className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent indie-flower-regular flex-[1.5] flex items-end text-7xl lg:text-8xl pl-0">
                 Amore
               </div>
             </h1>
 
 
-            <p className="text-xl text-white/90 mb-8 leading-relaxed font-mono min-h-[2.5rem]">
+            <p className="text-xl lg:text-2xl text-white/90 mb-10 leading-relaxed font-mono min-h-[2.5rem]">
               {typedLine1}
               {typedLine1.length < line1.length && <span className="animate-pulse">|</span>}
             </p>
-            <p className="text-lg text-white/80 mb-10 max-w-md font-mono min-h-[2.5rem]">
+            <p className="text-base lg:text-lg text-white/80 mb-12 max-w-2xl font-mono min-h-[2rem]">
               {typedLine2}
               {typedLine1.length === line1.length && typedLine2.length < line2.length && <span className="animate-pulse">|</span>}
             </p>
 
             <Button
-              className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-14 py-6 rounded-full text-2xl font-semibold transition-all duration-300 transform hover:scale-110 shadow-xl hover:shadow-2xl"
               onClick={() => router.push("/auth")}
             >
               Get Started
             </Button>
           </div>
 
-          <div className="relative">
-            <div className="relative w-full h-96 lg:h-[500px] group">
+          <div className="relative flex justify-center items-center">
+            <div className="relative w-full h-[500px] lg:h-[650px] group">
               <Image
                 src="/table.png"
                 alt="3D illustration of romantic date planning elements"
@@ -281,7 +276,7 @@ export default function LandingPage() {
       </div>
 
       {/* Get Started Section */}
-      <section id="get-started" ref={getStartedRef} className="bg-gradient-to-br from-orange-300 to-yellow-400 py-20 -mt-1">
+      <section id="get-started" ref={getStartedRef} className="bg-gradient-to-b from-orange-300 to-yellow-400 py-20 -mt-1">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-5xl font-bold text-gray-900 mb-8">
             Ready to Find
@@ -336,7 +331,7 @@ export default function LandingPage() {
       </div>
 
       {/* Contact Us Section */}
-      <section id="contact" className="bg-gradient-to-br from-pink-300 to-rose-400 py-20 -mt-1">
+      <section id="contact" className="bg-gradient-to-b from-pink-300 to-rose-400 py-20 -mt-1">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-5xl font-bold text-white text-center mb-16">Contact Us</h2>
 
@@ -429,7 +424,7 @@ export default function LandingPage() {
       <section ref={testimonialsRef} className="bg-white py-20 -mt-1 opacity-0 will-change-transform">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-12">What Our Users Say</h2>
-          <div className="bg-gradient-to-br from-pink-100 to-rose-100 rounded-3xl p-12">
+          <div className="bg-gradient-to-b from-pink-100 to-rose-100 rounded-3xl p-12">
             <p className="text-2xl text-gray-800 italic mb-6 transition-all duration-500">
               "{testimonials[currentTestimonial].text}"
             </p>
