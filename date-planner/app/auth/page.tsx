@@ -3,6 +3,9 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { auth } from "@/lib/firebaseAuth"
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -11,8 +14,14 @@ import { Heart, Sparkles, Mail, Lock, User } from "lucide-react"
 import Link from "next/link"
 
 export default function AuthPage() {
+  const router = useRouter();
   const [isLogin, setIsLogin] = useState(true)
   const [floatingHearts, setFloatingHearts] = useState<Array<{ id: number; x: number; y: number }>>([])
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [name, setName] = useState("")
+  const [error, setError] = useState("")
+  const [loading, setLoading] = useState(false)
 
   const createFloatingHeart = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -28,8 +37,27 @@ export default function AuthPage() {
     }, 2000)
   }
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+        // Optionally update profile with name
+      }
+      router.push("/form");
+    } catch (err: any) {
+      setError(err.message || "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-rose-100 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-200 to-rose-300 flex items-center justify-center p-4 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden">
         {Array.from({ length: 20 }).map((_, i) => (
@@ -69,7 +97,7 @@ export default function AuthPage() {
         </div>
       ))} */}
 
-      <Card className="w-full max-w-md glass-effect border-pink-200 shadow-2xl relative overflow-hidden">
+      <Card className="w-full max-w-md glass-effect bg-white/60 border-pink-200 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-purple-500/5 to-rose-500/5" />
 
         <CardHeader className="text-center relative z-10">
@@ -90,7 +118,8 @@ export default function AuthPage() {
         </CardHeader>
 
         <CardContent className="space-y-6 relative z-10">
-          <form className="space-y-4" onMouseMove={createFloatingHeart}>
+
+          <form className="space-y-4" onMouseMove={createFloatingHeart} onSubmit={handleSubmit}>
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-gray-700 font-medium">
@@ -103,6 +132,8 @@ export default function AuthPage() {
                     type="text"
                     placeholder="Enter your full name"
                     className="pl-10 border-pink-200 focus:border-pink-400 focus:ring-pink-400"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
                   />
                 </div>
               </div>
@@ -119,6 +150,8 @@ export default function AuthPage() {
                   type="email"
                   placeholder="Enter your email"
                   className="pl-10 border-pink-200 focus:border-pink-400 focus:ring-pink-400"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -134,15 +167,20 @@ export default function AuthPage() {
                   type="password"
                   placeholder="Enter your password"
                   className="pl-10 border-pink-200 focus:border-pink-400 focus:ring-pink-400"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
                 />
               </div>
             </div>
 
+            {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+
             <Button
               type="submit"
               className="w-full bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-semibold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+              disabled={loading}
             >
-              {isLogin ? "Sign In" : "Create Account"} 💕
+              {loading ? (isLogin ? "Signing In..." : "Creating Account...") : (isLogin ? "Sign In" : "Create Account")}
             </Button>
           </form>
 

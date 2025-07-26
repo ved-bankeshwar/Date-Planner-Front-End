@@ -5,11 +5,55 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Sparkles, Star, Users, Coffee, MapPin } from "lucide-react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { onAuthStateChanged } from "firebase/auth"
+import { auth } from "@/lib/firebaseAuth"
 import Image from "next/image"
+import LocationButton from "@/components/location_btn"
 
 export default function LandingPage() {
+  const router = useRouter();
+  // Smooth scroll to Contact Us section
+  const handleContactScroll = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   const [isLoaded, setIsLoaded] = useState(false)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
+
+  // Typewriter effect for hero text
+  const line1 = "A  dating concierge....kinda";
+  const line2 = "UUnlimited date ideas unlimited fun.";
+  const [typedLine1, setTypedLine1] = useState("");
+  const [typedLine2, setTypedLine2] = useState("");
+
+  useEffect(() => {
+    let i = 0;
+    let j = 0;
+    let typingLine1 = true;
+    const interval = setInterval(() => {
+      if (typingLine1) {
+        if (i < line1.length - 1) {
+          setTypedLine1(prev => prev + line1[i]);
+          i++;
+        } else {
+          typingLine1 = false;
+        }
+      } else {
+        if (j < line2.length -1) {
+          setTypedLine2(prev => prev + line2[j]);
+          j++;
+        } else {
+          clearInterval(interval);
+        }
+      }
+    }, 40);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const testimonials = [
     { text: "Meet Me Amore planned the most magical evening! Every detail was perfect 💕", author: "Sarah & Mike" },
@@ -55,10 +99,12 @@ export default function LandingPage() {
               Meet Me Amore
             </div>
             <div className="hidden md:flex items-center space-x-8">
-              <a href="#get-started" className="text-gray-700 hover:text-pink-600 transition-colors">
-                Get Started
-              </a>
-              <a href="#contact" className="text-gray-700 hover:text-pink-600 transition-colors">
+              
+              <a
+                href="#contact"
+                className="text-gray-700 hover:text-pink-600 transition-colors"
+                onClick={handleContactScroll}
+              >
                 Contact Us
               </a>
               <Link href="/auth">
@@ -78,7 +124,7 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative min-h-screen bg-gradient-to-br from-pink-400 via-rose-400 to-pink-500 flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-screen bg-gradient-to-br from-pink-400 via-rose-400 to-pink-500 flex items-center justify-start overflow-hidden">
         {/* Floating Elements */}
         <div className="absolute inset-0">
           {Array.from({ length: 20 }).map((_, i) => (
@@ -105,39 +151,56 @@ export default function LandingPage() {
           ))}
         </div>
 
-        <div className="relative z-10 max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-12 items-center">
+        <div className="relative z-10  grid lg:grid-cols-2 gap-12 items-center justify-start px-20 w-full">
           <div className="text-center lg:text-left">
-            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-8">
+            <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-8 transition-transform duration-200 hover:-translate-y-1 hover:shadow-xl cursor-pointer">
               <Sparkles className="text-white" size={16} />
               <span className="text-white font-medium">AI-Powered Date Planning</span>
             </div>
 
-            <h1 className="text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight">
-              meet me
-              <br />
-              <span className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent">
-                amore
-              </span>
+            <h1 className="text-8xl lg:text-9xl text-white mb-6 leading-tight font-thin flex flex-col">
+              <div className=" bg-clip-text text-white font-bold indie-flower-regular text-5xl flex-[1.5] flex items-end px-5">
+                meet me
+              </div>
+              
+              <div className="bg-gradient-to-r from-yellow-300 to-orange-400 bg-clip-text text-transparent indie-flower-regular flex-[1.5] flex items-start justify-start">
+                Amore
+              </div>
             </h1>
 
-            <p className="text-xl text-white/90 mb-8 leading-relaxed">A dating concierge....kinda</p>
 
-            <p className="text-lg text-white/80 mb-10 max-w-md">Unlimited date ideas and a flat monthly fee.</p>
+            <p className="text-xl text-white/90 mb-8 leading-relaxed font-mono min-h-[2.5rem]">
+              {typedLine1}
+              {typedLine1.length < line1.length && <span className="animate-pulse">|</span>}
+            </p>
+            <p className="text-lg text-white/80 mb-10 max-w-md font-mono min-h-[2.5rem]">
+              {typedLine2}
+              {typedLine1.length === line1.length && typedLine2.length < line2.length && <span className="animate-pulse">|</span>}
+            </p>
 
-            <Link href="/auth">
-              <Button className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                See Plans
-              </Button>
-            </Link>
+            <Button
+              className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              onClick={async () => {
+                onAuthStateChanged(auth, (user) => {
+                  if (user) {
+                    router.push("/form");
+                  } else {
+                    router.push("/auth");
+                  }
+                });
+              }}
+            >
+              Get Started
+            </Button>
           </div>
 
           <div className="relative">
-            <div className="relative w-full h-96 lg:h-[500px]">
+            <div className="relative w-full h-96 lg:h-[500px] group">
               <Image
-                src="/placeholder.svg?height=500&width=500"
+                src="/table.png"
                 alt="3D illustration of romantic date planning elements"
                 fill
-                className="object-contain"
+                className="object-contain transition-transform duration-300 group-hover:scale-110"
                 priority
               />
             </div>
@@ -167,7 +230,7 @@ export default function LandingPage() {
           </p>
 
           <div className="grid md:grid-cols-3 gap-8 mb-12">
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="text-orange-500" size={32} />
               </div>
@@ -175,7 +238,7 @@ export default function LandingPage() {
               <p className="text-gray-800">Get started in just 5 minutes with our simple questionnaire</p>
             </div>
 
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Sparkles className="text-orange-500" size={32} />
               </div>
@@ -183,7 +246,7 @@ export default function LandingPage() {
               <p className="text-gray-800">Our AI creates personalized date plans just for you</p>
             </div>
 
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6">
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl">
               <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
                 <Heart className="text-orange-500" size={32} />
               </div>

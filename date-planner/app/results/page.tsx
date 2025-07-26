@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useAuth } from "@/lib/useAuth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -10,6 +11,7 @@ import { Heart, MapPin, Clock, DollarSign, MessageCircle, Shirt, Car, Star, Cale
 import Link from "next/link"
 
 export default function ResultsPage() {
+  useAuth(); // Redirects to /auth if not logged in
   const [chatMessages, setChatMessages] = useState<Array<{ type: "user" | "ai"; message: string }>>([])
   const [chatInput, setChatInput] = useState("")
   const [showChat, setShowChat] = useState(false)
@@ -74,7 +76,7 @@ export default function ResultsPage() {
         </div>
 
         {/* Main Date Idea */}
-        <Card className="glass-effect border-pink-200 shadow-2xl">
+        <Card className="bg-white/90 border-2 border-pink-300 shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
           <CardHeader>
             <CardTitle className="text-2xl text-center text-gray-800 flex items-center justify-center gap-2">
               <Heart className="text-pink-500" size={28} />
@@ -139,7 +141,7 @@ export default function ResultsPage() {
         {/* Additional Suggestions */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Outfit Suggestions */}
-          <Card className="glass-effect border-pink-200">
+          <Card className="bg-white/90 border-2 border-pink-300 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-800">
                 <Shirt className="text-pink-500" size={24} />
@@ -157,7 +159,7 @@ export default function ResultsPage() {
           </Card>
 
           {/* Conversation Starters */}
-          <Card className="glass-effect border-pink-200">
+          <Card className="bg-white/90 border-2 border-pink-300 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-800">
                 <MessageCircle className="text-pink-500" size={24} />
@@ -178,21 +180,21 @@ export default function ResultsPage() {
         <div className="flex flex-wrap gap-4 justify-center">
           <Button
             onClick={() => setShowChat(!showChat)}
-            className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white"
+            className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white transition-transform duration-200 hover:-translate-y-1"
           >
             <MessageCircle size={20} className="mr-2" />
             Chat to Refine
           </Button>
-          <Button variant="outline" className="border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent">
+          <Button variant="outline" className="border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent transition-transform duration-200 hover:-translate-y-1">
             <MapPin size={20} className="mr-2" />
             Book Restaurant
           </Button>
-          <Button variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50 bg-transparent">
+          <Button variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50 bg-transparent transition-transform duration-200 hover:-translate-y-1">
             <Car size={20} className="mr-2" />
             Book Transportation
           </Button>
           <Link href="/feedback">
-            <Button variant="outline" className="border-rose-300 text-rose-600 hover:bg-rose-50 bg-transparent">
+            <Button variant="outline" className="border-rose-300 text-rose-600 hover:bg-rose-50 bg-transparent transition-transform duration-200 hover:-translate-y-1">
               <Star size={20} className="mr-2" />
               Complete Date
             </Button>
@@ -201,7 +203,7 @@ export default function ResultsPage() {
 
         {/* Chat Interface */}
         {showChat && (
-          <Card className="glass-effect border-pink-200">
+          <Card className="bg-white/90 border-2 border-pink-300 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-800">
                 <MessageCircle className="text-pink-500" size={24} />

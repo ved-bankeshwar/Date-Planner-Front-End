@@ -63,7 +63,10 @@ const questions = [
   },
 ]
 
+import { useAuth } from "@/lib/useAuth"
+
 export default function FormPage() {
+  useAuth(); // Redirects to /auth if not logged in
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [floatingHearts, setFloatingHearts] = useState<Array<{ id: number; x: number; y: number }>>([])
@@ -106,7 +109,7 @@ export default function FormPage() {
   const isLastQuestion = currentQuestion === questions.length - 1
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-200 via-purple-200 to-rose-200 p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-300 to-rose-300 p-4 relative overflow-hidden">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
         {Array.from({ length: 15 }).map((_, i) => (
@@ -143,13 +146,13 @@ export default function FormPage() {
       <div className="max-w-2xl mx-auto relative z-10">
         {/* Progress bar */}
         <div className="mb-8">
-          <div className="flex justify-between items-center mb-2 bg-white/20">
+          <div className="flex justify-between items-center mb-2 bg-white/10">
             <span className="text-sm font-medium text-gray-600">
               Question {currentQuestion + 1} of {questions.length}
             </span>
             <span className="text-sm font-medium text-pink-600">{Math.round(progress)}% Complete</span>
           </div>
-          <Progress value={progress} className="h-2 bg-white/20" />
+          <Progress value={progress} className="h-2 bg-white/10" />
         </div>
 
         <Card className="glass-effect bg-white/60 border-pink-50 shadow-2xl relative overflow-hidden">
@@ -186,7 +189,7 @@ export default function FormPage() {
                 value={answers[currentQ.id] || ""}
                 onChange={(e) => handleAnswer(currentQ.id, e.target.value)}
                 placeholder={currentQ.placeholder}
-                className="min-h-32 border-pink-200 focus:border-pink-400 focus:ring-pink-400 resize-none"
+                className="min-h-32 border-pink-300 focus:border-pink-400 focus:ring-pink-400 resize-none"
               />
             )}
 
