@@ -4,9 +4,9 @@ import type React from "react"
 
 import { useState } from "react"
 import { useAuth } from "@/lib/useAuth"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/app/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card"
+import { Badge } from "@/app/ui/badge"
 import { Heart, MapPin, Clock, DollarSign, MessageCircle, Shirt, Car, Star, Calendar } from "lucide-react"
 import Link from "next/link"
 

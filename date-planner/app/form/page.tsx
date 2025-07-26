@@ -3,12 +3,12 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Progress } from "@/components/ui/progress"
+import { Button } from "@/app/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card"
+import { RadioGroup, RadioGroupItem } from "@/app/ui/radio-group"
+import { Label } from "@/app/ui/label"
+import { Textarea } from "@/app/ui/textarea"
+import { Progress } from "@/app/ui/progress"
 import { Heart, ArrowLeft, ArrowRight } from "lucide-react"
 import Link from "next/link"
 

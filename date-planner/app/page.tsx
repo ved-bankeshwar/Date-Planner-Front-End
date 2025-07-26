@@ -1,8 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/app/ui/button"
+import { Card, CardContent } from "@/app/ui/card"
 import { Heart, Sparkles, Star, Users, Coffee, MapPin } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -174,14 +174,14 @@ export default function LandingPage() {
   if (!isLoaded) {
     return (
       <div className="fixed inset-0 bg-gradient-to-br from-pink-400 to-rose-500 flex items-center justify-center z-50">
-        <div className="text-center">
-          <div className="relative">
-            <Heart className="text-white animate-pulse" size={60} />
-            <div className="absolute inset-0 animate-ping">
+        <div className="flex flex-col items-center justify-center w-full h-full">
+          <div className="relative flex items-center justify-center w-32 h-32">
+            <Heart className="text-white animate-pulse absolute inset-0 m-auto" size={60} />
+            <div className="absolute inset-0 animate-ping flex items-center justify-center">
               <Heart className="text-white/50" size={60} />
             </div>
           </div>
-          <p className="text-white mt-4 text-xl font-semibold">Creating Magic...</p>
+          <p className="text-white mt-4 text-xl font-semibold text-center">Creating Magic...</p>
         </div>
       </div>
     )
@@ -253,15 +253,7 @@ export default function LandingPage() {
 
             <Button
               className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-8 py-4 rounded-full text-lg font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-              onClick={async () => {
-                onAuthStateChanged(auth, (user) => {
-                  if (user) {
-                    router.push("/form");
-                  } else {
-                    router.push("/auth");
-                  }
-                });
-              }}
+              onClick={() => router.push("/auth")}
             >
               Get Started
             </Button>

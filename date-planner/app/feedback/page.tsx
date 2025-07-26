@@ -3,9 +3,9 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/app/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card"
+import { Textarea } from "@/app/ui/textarea"
 import { Heart, Star, Smile, Meh, Frown } from "lucide-react"
 import Link from "next/link"
 

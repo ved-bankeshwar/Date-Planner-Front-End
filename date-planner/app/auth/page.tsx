@@ -6,10 +6,10 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { auth } from "@/lib/firebaseAuth"
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { Button } from "@/app/ui/button"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/app/ui/card"
+import { Input } from "@/app/ui/input"
+import { Label } from "@/app/ui/label"
 import { Heart, Sparkles, Mail, Lock, User } from "lucide-react"
 import Link from "next/link"
 
@@ -196,13 +196,7 @@ export default function AuthPage() {
             </p>
           </div>
 
-          <div className="text-center">
-            <Link href="/form">
-              <Button variant="outline" className="border-pink-200 text-pink-600 hover:bg-pink-50 bg-transparent">
-                Continue as Guest ✨
-              </Button>
-            </Link>
-          </div>
+          {/* Continue as Guest option removed */}
         </CardContent>
       </Card>
     </div>
