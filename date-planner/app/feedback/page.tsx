@@ -70,7 +70,7 @@ export default function FeedbackPage() {
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-rose-100 p-4">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold gradient-text mb-4">How Was Your Date? ✨</h1>
+          <h1 className="text-4xl font-bold gradient-text mb-4">How Was Your Date? </h1>
           <p className="text-gray-600">Help us make your next date even more perfect!</p>
         </div>
 
@@ -152,7 +152,7 @@ export default function FeedbackPage() {
               disabled={rating === 0}
               className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-3 text-lg font-semibold disabled:opacity-50"
             >
-              Share Feedback 💕
+              Share Feedback 
             </Button>
           </div>
         </form>

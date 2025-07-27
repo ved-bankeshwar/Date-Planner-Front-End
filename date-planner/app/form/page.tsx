@@ -22,41 +22,23 @@ const questions = [
   {
     id: 2,
     question: "What's your ideal date budget?",
-    type: "radio",
-    options: ["Under $50", "$50-$100", "$100-$200", "$200+", "Money is no object"],
+    type: "text",
+    placeholder: "₹‎ 5000 - ₹‎ 10000",
   },
   {
     id: 3,
-    question: "What time of day do you prefer for dates?",
-    type: "radio",
-    options: ["Morning (8AM-12PM)", "Afternoon (12PM-5PM)", "Evening (5PM-9PM)", "Late night (9PM+)"],
-  },
-  {
-    id: 4,
     question: "What type of activities do you enjoy most?",
     type: "radio",
     options: ["Outdoor adventures", "Cultural experiences", "Food & drinks", "Entertainment", "Relaxing activities"],
   },
   {
-    id: 5,
+    id: 4,
     question: "How would you describe your personality?",
     type: "radio",
     options: ["Outgoing & social", "Quiet & intimate", "Adventurous & spontaneous", "Thoughtful & planned"],
   },
   {
-    id: 6,
-    question: "What's your location or preferred area?",
-    type: "text",
-    placeholder: "Enter your city or preferred location...",
-  },
-  {
-    id: 7,
-    question: "Tell us about your interests and hobbies",
-    type: "text",
-    placeholder: "What do you love doing in your free time?",
-  },
-  {
-    id: 8,
+    id: 5,
     question: "Any specific preferences or things to avoid?",
     type: "text",
     placeholder: "Dietary restrictions, accessibility needs, dislikes, etc.",
@@ -210,7 +192,7 @@ export default function FormPage() {
                     disabled={!hasAnswer}
                     className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white disabled:opacity-50"
                   >
-                    Create My Date Plan 💕
+                    Create My Date Plan 
                   </Button>
                 </Link>
               ) : (

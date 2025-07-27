@@ -185,11 +185,19 @@ export default function ResultsPage() {
             <MessageCircle size={20} className="mr-2" />
             Chat to Refine
           </Button>
-          <Button variant="outline" className="border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent transition-transform duration-200 hover:-translate-y-1">
+          <Button
+            variant="outline"
+            className="border-pink-300 text-pink-600 hover:bg-pink-50 bg-transparent transition-transform duration-200 hover:-translate-y-1"
+            onClick={() => window.open("https://www.zomato.com/dine-out", "_blank")}
+          >
             <MapPin size={20} className="mr-2" />
             Book Restaurant
           </Button>
-          <Button variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-50 bg-transparent transition-transform duration-200 hover:-translate-y-1">
+          <Button
+            variant="outline"
+            className="border-purple-300 text-purple-600 hover:bg-purple-50 bg-transparent transition-transform duration-200 hover:-translate-y-1"
+            onClick={() => window.open("https://www.uber.com/in/en/", "_blank")}
+          >
             <Car size={20} className="mr-2" />
             Book Transportation
           </Button>

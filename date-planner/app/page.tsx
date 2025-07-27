@@ -316,7 +316,8 @@ export default function LandingPage() {
           </div>
 
           <Link href="/auth">
-            <Button className="bg-gradient-to-r from-orange-400 to-yellow-300 hover:from-orange-500 hover:to-yellow-400 text-gray-900 px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+              
+            <Button className="px-6 py-3 rounded-full bg-gradient-to-r from-pink-700 to-pink-400 bg-opacity-80 text-white font-semibold text-lg shadow-lg hover:scale-105 transition-transform duration-200">
               Start Your Love Story
             </Button>
           </Link>
