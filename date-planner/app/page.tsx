@@ -247,7 +247,7 @@ export default function LandingPage() {
             </p>
 
             <Button
-              className="bg-gradient-to-r from-orange-400 to-orange-500 hover:from-orange-500 hover:to-orange-600 text-white px-14 py-6 rounded-full text-2xl font-semibold transition-all duration-300 transform hover:scale-110 shadow-xl hover:shadow-2xl"
+              className="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white px-14 py-6 rounded-full text-2xl font-semibold transition-all duration-300 transform hover:scale-110 shadow-xl hover:shadow-2xl"
               onClick={() => router.push("/auth")}
             >
               Get Started
@@ -316,7 +316,7 @@ export default function LandingPage() {
           </div>
 
           <Link href="/auth">
-            <Button className="bg-gradient-to-r from-pink-500 to-rose-600 hover:from-pink-600 hover:to-rose-700 text-white px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+            <Button className="bg-gradient-to-r from-orange-400 to-yellow-300 hover:from-orange-500 hover:to-yellow-400 text-gray-900 px-12 py-4 rounded-full text-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
               Start Your Love Story
             </Button>
           </Link>
@@ -344,7 +344,7 @@ export default function LandingPage() {
 
               <div className="space-y-6">
                 <div className="flex items-center gap-4 p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-                  <div className="p-3 rounded-xl bg-gradient-to-r from-orange-400 to-yellow-500">
+                  <div className="p-3 rounded-xl bg-transparent">
                     <MapPin className="text-white" size={24} />
                   </div>
                   <div>
@@ -354,7 +354,7 @@ export default function LandingPage() {
                 </div>
 
                 <div className="flex items-center gap-4 p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-                  <div className="p-3 rounded-xl bg-gradient-to-r from-orange-400 to-yellow-500">
+                  <div className="p-3 rounded-xl bg-transparent">
                     <Coffee className="text-white" size={24} />
                   </div>
                   <div>
@@ -364,7 +364,7 @@ export default function LandingPage() {
                 </div>
 
                 <div className="flex items-center gap-4 p-4 bg-white/20 backdrop-blur-sm rounded-2xl">
-                  <div className="p-3 rounded-xl bg-gradient-to-r from-orange-400 to-yellow-500">
+                  <div className="p-3 rounded-xl bg-transparent">
                     <Heart className="text-white" size={24} />
                   </div>
                   <div>
@@ -421,7 +421,7 @@ export default function LandingPage() {
       </div>
 
       {/* Testimonials Section - Now at the end */}
-      <section ref={testimonialsRef} className="bg-white py-20 -mt-1 opacity-0 will-change-transform">
+      <section ref={testimonialsRef} className="bg-[#f6e9ef] py-20 -mt-1 opacity-0 will-change-transform">
         <div className="max-w-4xl mx-auto px-6 text-center">
           <h2 className="text-4xl font-bold text-gray-900 mb-12">What Our Users Say</h2>
           <div className="bg-gradient-to-b from-pink-100 to-rose-100 rounded-3xl p-12">
