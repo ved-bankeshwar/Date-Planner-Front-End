@@ -142,7 +142,7 @@ export default function LandingPage() {
           typingLine1 = false;
         }
       } else {
-        if (j < line2.length -1) {
+        if (j < line2.length - 1) {
           setTypedLine2(prev => prev + line2[j]);
           j++;
         } else {
@@ -178,26 +178,38 @@ export default function LandingPage() {
     return (
       <div className="fixed inset-0 bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center z-50">
         <div className="flex flex-col items-center justify-center w-full h-full">
-          
-          </div>
-          <p className="text-white mt-4 text-xl font-semibold text-center flex justify-center items-center">Creating Magic...</p>
+
         </div>
-      
+        <p className="text-white mt-4 text-xl font-semibold text-center flex justify-center items-center">Creating Magic...</p>
+      </div>
+
     )
   }
 
   return (
-    <div className="min-h-screen bg-white  relative overflow-hidden">
-    <div className="bg-[url('/main_bg.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative">
-      <div className="absolute left-[280px] top-[200px] flex items-center justify-center">
+    <div className="min-h-screen bg-white  relative overflow-hidden flex flex-col items-center">
+      <div className=" flex-1 bg-[url('/main_bg.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative">
+        <div className="absolute left-[280px] top-[200px] flex items-center justify-center">
 
-    <h1 className=" text-8xl font-bold text-black  italiana-regular ">Meet Me Amore</h1>
-  </div>
-  <div className="absolute left-[280px] top-[350px] flex items-center justify-center px-[180px] ">
-    <button className="bg-black rounded-xl h-[80px] w-[200px] text-white text-lg ">Get Started</button>
-  </div>
+          <h1 className=" text-8xl font-bold text-black  italiana-regular ">Meet Me Amore</h1>
+        </div>
+        <div className="absolute left-[280px] top-[350px] flex items-center justify-center px-[180px] ">
+          <button className="bg-black rounded-xl h-[80px] w-[200px] text-white text-lg ">Get Started</button>
+        </div>
 
       </div>
+      <div className="flex-1 bg-[url('/bg3.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative">
       </div>
+
+      <div>
+      <div className="flex-1 bg-[url('/bg4.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative"></div>
+      </div>
+
+      <div>
+        <div className="flex-[0.1] bg-[url('/border.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative"></div>
+      </div>
+      
+      
+    </div>
   )
 }
