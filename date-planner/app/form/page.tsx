@@ -38,8 +38,8 @@ const questions = [
   {
     id:4,
     question: "What type of date location do you want?",
-    type: "radio",
-    options: ["Beach", "Mountains", "Restaurant", "Movie"],
+    type: "text",
+    placeholder: "Beach, Mountains, Restaurant, Movie",
   }
 ]
 

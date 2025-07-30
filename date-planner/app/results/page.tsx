@@ -229,6 +229,24 @@ export default function ResultsPage() {
     let latitude = localStorage.getItem("latitude") || "19.076";
     let longitude = localStorage.getItem("longitude") || "72.8777";
 
+    let selectedPlace = null;
+    try {
+      selectedPlace = JSON.parse(localStorage.getItem("selectedPlace") || "null");
+    } catch (_) {
+      selectedPlace = null;
+    }
+
+    if (!selectedPlace) {
+      setChatMessages((prev) => [
+        ...prev,
+        {
+          type: "ai",
+          message: "Please confirm a place before refining your date!",
+        },
+      ]);
+      return;
+    }
+
     const res = await fetch("http://localhost:8000/api/chatLogic", {
       method: "POST",
       headers: {
@@ -372,7 +390,7 @@ export default function ResultsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 p-3 bg-rose-50 rounded-lg">
-                    <DollarSign className="text-rose-500" size={20} />
+                    <p>₹</p>
                     <div>
                       <p className="text-sm text-gray-600">Budget</p>
                       <p className="font-semibold text-gray-800">{dateIdea.budget}</p>
