@@ -57,9 +57,9 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-200 to-rose-300 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="bg-[url('/auth_bg.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative flex items-center justify-center">
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* <div className="absolute inset-0 overflow-hidden">
         {Array.from({ length: 20 }).map((_, i) => (
           <div
             key={i}
@@ -80,7 +80,7 @@ export default function AuthPage() {
             )}
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Floating hearts from interactions */}
       {/* {floatingHearts.map((heart) => (
@@ -101,14 +101,7 @@ export default function AuthPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-purple-500/5 to-rose-500/5" />
 
         <CardHeader className="text-center relative z-10">
-          <div className="flex justify-center mb-4">
-            <div className="relative">
-              <Heart className="text-pink-500 animate-pulse" size={48} />
-              <div className="absolute inset-0 animate-ping opacity-30">
-                <Heart className="text-pink-400" size={48} />
-              </div>
-            </div>
-          </div>
+          
           <CardTitle className="text-3xl font-bold gradient-text">
             {isLogin ? "Welcome Back" : "Join DateCraft"}
           </CardTitle>

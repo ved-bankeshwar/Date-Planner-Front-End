@@ -176,11 +176,11 @@ export default function LandingPage() {
 
   if (!isLoaded) {
     return (
-      <div className="fixed inset-0 bg-gradient-to-br from-blue-400 to-blue-500 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-gradient-to-br bg-black flex items-center justify-center z-50">
         <div className="flex flex-col items-center justify-center w-full h-full">
 
         </div>
-        <p className="text-white mt-4 text-xl font-semibold text-center flex justify-center items-center">Creating Magic...</p>
+        <p className="text-white mt-4 text-xl font-semibold text-center flex justify-center items-center">Loading...</p>
       </div>
 
     )
