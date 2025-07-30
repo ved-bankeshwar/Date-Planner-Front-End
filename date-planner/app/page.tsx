@@ -191,10 +191,10 @@ export default function LandingPage() {
       <div className=" flex-1 bg-[url('/main_bg.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative">
         <div className="absolute left-[280px] top-[200px] flex items-center justify-center">
 
-          <h1 className=" text-8xl font-bold text-black  italiana-regular ">Meet Me Amore</h1>
+
         </div>
-        <div className="absolute left-[280px] top-[350px] flex items-center justify-center px-[180px] ">
-          <button className="bg-black rounded-xl h-[80px] w-[200px] text-white text-lg ">Get Started</button>
+        <div className="absolute left-[1800px] top-[1350px] flex items-center justify-center px-[180px] ">
+          <button className="bg-black rounded-xl h-[120px] w-[500px] text-white text-4xl ">Get Started</button>
         </div>
 
       </div>
