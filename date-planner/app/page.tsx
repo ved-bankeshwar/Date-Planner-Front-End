@@ -193,8 +193,13 @@ export default function LandingPage() {
 
 
         </div>
-        <div className="absolute left-[1800px] top-[1350px] flex items-center justify-center px-[180px] ">
-          <button className="bg-black rounded-xl h-[120px] w-[500px] text-white text-4xl ">Get Started</button>
+        <div className="absolute left-[280px] top-[350px] flex items-center justify-center px-[180px] ">
+          <button
+            className="bg-black rounded-xl h-[30px] w-[200px] text-white text-lg "
+            onClick={() => router.push('/auth')}
+          >
+            Get Started
+          </button>
         </div>
 
       </div>
@@ -205,9 +210,6 @@ export default function LandingPage() {
       <div className="flex-1 bg-[url('/bg4.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative"></div>
       </div>
 
-      <div>
-        <div className="flex-[0.1] bg-[url('/border.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative"></div>
-      </div>
       
       
     </div>
