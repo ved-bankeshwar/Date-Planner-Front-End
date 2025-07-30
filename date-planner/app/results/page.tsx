@@ -1,14 +1,22 @@
-"use client"
-
-import type React from "react"
-
-import { useState } from "react"
+  "use client"
+  // Quippy line state
+ 
+  import React, { useState, useEffect } from "react"
 import { useAuth } from "@/lib/useAuth"
 import { Button } from "@/app/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card"
 import { Badge } from "@/app/ui/badge"
 import { Heart, MapPin, Clock, DollarSign, MessageCircle, Shirt, Car, Star, Calendar } from "lucide-react"
 import Link from "next/link"
+import { getAuth } from "firebase/auth";
+import { useRouter } from "next/navigation";
+
+
+
+
+
+
+
 
 export default function ResultsPage() {
   useAuth(); // Redirects to /auth if not logged in
@@ -16,35 +24,199 @@ export default function ResultsPage() {
   const [chatInput, setChatInput] = useState("")
   const [showChat, setShowChat] = useState(false)
 
-  const dateIdea = {
-    title: "Sunset Picnic & Stargazing Adventure",
-    description: "A romantic evening combining nature, good food, and intimate conversation under the stars.",
-    location: "Griffith Observatory, Los Angeles",
-    duration: "4-5 hours",
-    budget: "$75-100",
-    time: "5:00 PM - 10:00 PM",
-    activities: [
-      { time: "5:00 PM", activity: "Meet at Griffith Observatory parking", icon: MapPin },
-      { time: "5:30 PM", activity: "Set up picnic spot with city view", icon: Heart },
-      { time: "6:00 PM", activity: "Enjoy gourmet picnic dinner", icon: DollarSign },
-      { time: "7:30 PM", activity: "Watch the sunset together", icon: Clock },
-      { time: "8:30 PM", activity: "Explore the observatory", icon: Star },
-      { time: "9:30 PM", activity: "Stargazing with telescope", icon: Star },
-    ],
-  }
+  // State for fetched date idea
+  const [dateIdea, setDateIdea] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
 
-  const outfitSuggestions = [
-    { type: "Casual Chic", description: "Comfortable jeans, cozy sweater, and stylish sneakers" },
-    { type: "Romantic", description: "Flowy dress with a light cardigan and comfortable flats" },
-    { type: "Adventurous", description: "Cute hiking outfit with layers for temperature changes" },
-  ]
+  // Quippy line state and fetch function (moved inside ResultsPage)
+  const [quippyLine, setQuippyLine] = useState<string>("");
+  const [quippyLoading, setQuippyLoading] = useState(false);
+  const [quippyError, setQuippyError] = useState("");
+  const fetchQuippyLine = async () => {
+    setQuippyLoading(true);
+    setQuippyError("");
+    setQuippyLine("");
+    let mood = null;
+    let status = null;
+    if (typeof window !== "undefined") {
+      mood = localStorage.getItem("mood");
+      status = localStorage.getItem("status");
+    }
+    mood = mood || "Romantic";
+    status = status || "Anniversary";
+    try {
+      const auth = getAuth();
+      const user = auth.currentUser;  
+      const idToken = user && (await user.getIdToken());
+      const res = await fetch("http://localhost:8000/api/quippyLineLogic", {
+        method: "POST",
+        headers: { "Content-Type": "application/json",...(idToken && { Authorization: `Bearer ${idToken}` }) },
+        credentials: "include",
+        body: JSON.stringify({ mood, occasion: status }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to fetch one-liner");
+      setQuippyLine(data.line || data.message || "Here's a fun line for your date!");
+    } catch (err: any) {
+      setQuippyError(err.message || "Failed to fetch one-liner");
+    } finally {
+      setQuippyLoading(false);
+    }
+  };
 
-  const conversationStarters = [
-    "What's the most beautiful sunset you've ever seen?",
-    "If you could travel to any planet, which would you choose?",
-    "What's your favorite childhood memory under the stars?",
-    "What's something that always makes you smile?",
-  ]
+  // Timeline state
+  const [timeline, setTimeline] = useState<any[]>([]);
+  const [timelineLoading, setTimelineLoading] = useState(false);
+  const [timelineError, setTimelineError] = useState("");
+
+  // Selection state
+  const [selectedPlace, setSelectedPlace] = useState<any>(null);
+  const [selectedOutfit, setSelectedOutfit] = useState<any>(null);
+
+  // Fetch place suggestion on mount, using coordinates from localStorage
+  useEffect(() => {
+    const fetchPlace = async () => {
+      if (typeof window === "undefined") return;
+      setLoading(true);
+      setFetchError("");
+      try {
+        // Get coordinates and form data from localStorage (set in form page)
+        let latitude = localStorage.getItem("latitude") || "19.076";
+        let longitude = localStorage.getItem("longitude") || "72.8777";
+        let mood = localStorage.getItem("mood") || "Romantic";
+        let budget = localStorage.getItem("budget") || "1000";
+        let status = localStorage.getItem("status") || "Anniversary";
+        let locationType = localStorage.getItem("locationType");
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (!user) {
+          router.push("/auth"); // Redirect to auth page if not logged in
+          return;
+        }
+        const idToken = user && (await user.getIdToken());
+        const res = await fetch("http://localhost:8000/api/promptLogic", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(idToken && { Authorization: `Bearer ${idToken}` }) },
+          credentials: "include",
+          body: JSON.stringify({
+            mood,
+            budget,
+            occasion: status,
+            locationType: locationType,
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude),
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to fetch place");
+        // Use the new response format from promptLogic
+        const place = data.place || data; // fallback if backend sends directly
+        setDateIdea({
+          title: place.name || "Date Adventure",
+          description: `A special date at ${place.name || "a great place"}.`,
+          location: place.address || "",
+          latitude: place.latitude,
+          longitude: place.longitude,
+          category: place.category,
+          duration: "3-5 hours",
+          budget: budget,
+          time: "Evening",
+          activities: [
+            { time: "Start", activity: `Arrive at ${place.name || "the venue"}`, icon: MapPin },
+            { time: "Enjoy", activity: "Enjoy your time together!", icon: Heart },
+          ],
+        });
+      } catch (err: any) {
+        setFetchError(err.message || "Failed to fetch place");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPlace();
+  }, []);
+
+  // Fetch outfit suggestions from backend
+  const [outfitSuggestions, setOutfitSuggestions] = useState<any[]>([]);
+  const [outfitLoading, setOutfitLoading] = useState(true);
+  const [outfitError, setOutfitError] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    // Get coordinates and form data from localStorage (set in form page)
+    if (typeof window === "undefined") return;
+    let lat = localStorage.getItem("latitude") || "19.076";
+    let lng = localStorage.getItem("longitude") || "72.8777";
+    let mood = localStorage.getItem("mood") || "Romantic";
+    let status = localStorage.getItem("status") || "Anniversary";
+    const fetchOutfits = async () => {
+      setOutfitLoading(true);
+      setOutfitError("");
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (!user) {
+          router.push("/auth"); // Redirect to auth page if not logged in
+          return;
+        }
+        const idToken = user && (await user.getIdToken());
+        const res = await fetch("http://localhost:8000/api/outfitSuggester", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(idToken && { Authorization: `Bearer ${idToken}` }) },
+          credentials: "include",
+          body: JSON.stringify({
+            mood,
+            occasion: status
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to fetch outfit suggestions");
+        setOutfitSuggestions(data.results || []);
+      } catch (err: any) {
+        setOutfitError(err.message || "Failed to fetch outfit suggestions");
+      } finally {
+        setOutfitLoading(false);
+      }
+    };
+    fetchOutfits();
+  }, []);
+
+
+  // Fetch actual flower vendors from backend
+  const [flowerVendors, setFlowerVendors] = useState<any[]>([]);
+  const [flowerLoading, setFlowerLoading] = useState(true);
+  const [flowerError, setFlowerError] = useState("");
+
+  useEffect(() => {
+    // Get coordinates from localStorage (set in form page)
+    if (typeof window === "undefined") return;
+    let lat = localStorage.getItem("latitude") || "19.076";
+    let lng = localStorage.getItem("longitude") || "72.8777";
+    const fetchFlowers = async () => {
+      setFlowerLoading(true);
+      setFlowerError("");
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        const idToken = user && (await user.getIdToken());
+        alert(idToken);
+        const res = await fetch("http://localhost:8000/api/flowerVendor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(idToken && { Authorization: `Bearer ${idToken}` }) },
+          credentials: "include",
+          body: JSON.stringify({ lat: parseFloat(lat), lng: parseFloat(lng) }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to fetch flower shops");
+        setFlowerVendors(data.results || []);
+      } catch (err: any) {
+        setFlowerError(err.message || "Failed to fetch flower shops");
+      } finally {
+        setFlowerLoading(false);
+      }
+    };
+    fetchFlowers();
+  }, []);
 
   const handleChatSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -66,6 +238,51 @@ export default function ResultsPage() {
     setChatInput("")
   }
 
+  // Automatically generate timeline when both selectedPlace and selectedOutfit are set
+  
+
+   useEffect(() => {
+    const generateTimeline = async () => {
+      if (!selectedPlace || !selectedOutfit) return;
+      setTimelineLoading(true);
+      setTimelineError("");
+      let mood = null, budget = null, occasion = null;
+      if (typeof window !== "undefined") {
+        mood = localStorage.getItem("mood");
+        budget = localStorage.getItem("budget");
+        occasion = localStorage.getItem("status");
+      }
+      mood = mood || "Romantic";
+      budget = budget || "1000";
+      occasion = occasion || "Anniversary";
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        const idToken = user && (await user.getIdToken());
+        const res = await fetch("http://localhost:8000/api/createTimeline", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", ...(idToken && { Authorization: `Bearer ${idToken}` }) },
+          credentials: "include",
+          body: JSON.stringify({
+            selectedPlace,
+            selectedOutfit,
+            mood,
+            budget,
+            occasion,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || "Failed to generate timeline");
+        setTimeline(data.timeline || []);
+      } catch (err: any) {
+        setTimelineError(err.message || "Failed to generate timeline");
+      } finally {
+        setTimelineLoading(false);
+      }
+    };
+    generateTimeline();
+  }, [selectedPlace, selectedOutfit]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-rose-100 p-4">
       <div className="max-w-4xl mx-auto space-y-6">
@@ -76,67 +293,109 @@ export default function ResultsPage() {
         </div>
 
         {/* Main Date Idea */}
-        <Card className="bg-white/90 border-2 border-pink-300 shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-          <CardHeader>
-            <CardTitle className="text-2xl text-center text-gray-800 flex items-center justify-center gap-2">
-              <Heart className="text-pink-500" size={28} />
-              {dateIdea.title}
-            </CardTitle>
-            <p className="text-center text-gray-600 mt-2">{dateIdea.description}</p>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Quick Info */}
-            <div className="grid md:grid-cols-4 gap-4">
-              <div className="flex items-center gap-2 p-3 bg-pink-50 rounded-lg">
-                <MapPin className="text-pink-500" size={20} />
-                <div>
-                  <p className="text-sm text-gray-600">Location</p>
-                  <p className="font-semibold text-gray-800">{dateIdea.location}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-lg">
-                <Clock className="text-purple-500" size={20} />
-                <div>
-                  <p className="text-sm text-gray-600">Duration</p>
-                  <p className="font-semibold text-gray-800">{dateIdea.duration}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-3 bg-rose-50 rounded-lg">
-                <DollarSign className="text-rose-500" size={20} />
-                <div>
-                  <p className="text-sm text-gray-600">Budget</p>
-                  <p className="font-semibold text-gray-800">{dateIdea.budget}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 p-3 bg-yellow-50 rounded-lg">
-                <Calendar className="text-yellow-500" size={20} />
-                <div>
-                  <p className="text-sm text-gray-600">Time</p>
-                  <p className="font-semibold text-gray-800">{dateIdea.time}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Timeline */}
-            <div>
-              <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Clock className="text-pink-500" size={24} />
-                Your Date Timeline
-              </h3>
-              <div className="space-y-4">
-                {dateIdea.activities.map((activity, index) => (
-                  <div key={index} className="flex items-center gap-4 p-4 bg-white/50 rounded-lg">
-                    <Badge variant="outline" className="border-pink-300 text-pink-600">
-                      {activity.time}
-                    </Badge>
-                    <activity.icon className="text-gray-500" size={20} />
-                    <span className="text-gray-700">{activity.activity}</span>
+        {loading ? (
+          <div className="text-center text-lg text-gray-500">Loading your date plan...</div>
+        ) : fetchError ? (
+          <div className="text-center text-red-500">{fetchError}</div>
+        ) : dateIdea ? (
+          <>
+            <Card className="bg-white/90 border-2 border-pink-300 shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+              <CardHeader>
+                <CardTitle className="text-2xl text-center text-gray-800 flex items-center justify-center gap-2">
+                  <Heart className="text-pink-500" size={28} />
+                  {dateIdea.title}
+                </CardTitle>
+                <p className="text-center text-gray-600 mt-2">{dateIdea.description}</p>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Quick Info */}
+                <div className="grid md:grid-cols-5 gap-4">
+                  <div className="flex items-center gap-2 p-3 bg-pink-50 rounded-lg">
+                    <MapPin className="text-pink-500" size={20} />
+                    <div>
+                      <p className="text-sm text-gray-600">Location</p>
+                      <p className="font-semibold text-gray-800">{dateIdea.location}</p>
+                      {dateIdea.latitude && dateIdea.longitude && (
+                        <a
+                          href={`https://www.google.com/maps?q=${dateIdea.latitude},${dateIdea.longitude}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 underline text-xs mt-1 block"
+                        >
+                          View on Google Maps
+                        </a>
+                      )}
+                    </div>
                   </div>
-                ))}
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                  <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-lg">
+                    <Clock className="text-purple-500" size={20} />
+                    <div>
+                      <p className="text-sm text-gray-600">Duration</p>
+                      <p className="font-semibold text-gray-800">{dateIdea.duration}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 bg-rose-50 rounded-lg">
+                    <DollarSign className="text-rose-500" size={20} />
+                    <div>
+                      <p className="text-sm text-gray-600">Budget</p>
+                      <p className="font-semibold text-gray-800">{dateIdea.budget}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 bg-yellow-50 rounded-lg">
+                    <Calendar className="text-yellow-500" size={20} />
+                    <div>
+                      <p className="text-sm text-gray-600">Time</p>
+                      <p className="font-semibold text-gray-800">{dateIdea.time}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+                    <Star className="text-blue-500" size={20} />
+                    <div>
+                      <p className="text-sm text-gray-600">Category</p>
+                      <p className="font-semibold text-gray-800">{dateIdea.category}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quippy Line Section */}
+                <div className="flex flex-col items-center mt-4">
+                  <Button
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg mb-2"
+                    onClick={fetchQuippyLine}
+                    disabled={quippyLoading}
+                  >
+                    {quippyLoading ? "Getting a one-liner..." : "Get a Fun One-Liner"}
+                  </Button>
+                  {quippyLine && (
+                    <div className="text-center text-pink-700 font-semibold mt-2">{quippyLine}</div>
+                  )}
+                  {quippyError && (
+                    <div className="text-center text-red-500 mt-2">{quippyError}</div>
+                  )}
+                </div>
+
+                {/* Timeline */}
+                <div>
+                  <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <Clock className="text-pink-500" size={24} />
+                    Your Date Timeline
+                  </h3>
+                  <div className="space-y-4">
+                    {dateIdea.activities.map((activity: any, index: number) => (
+                      <div key={index} className="flex items-center gap-4 p-4 bg-white/50 rounded-lg">
+                        <Badge variant="outline" className="border-pink-300 text-pink-600">
+                          {activity.time}
+                        </Badge>
+                        <activity.icon className="text-gray-500" size={20} />
+                        <span className="text-gray-700">{activity.activity}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        ) : null}
 
         {/* Additional Suggestions */}
         <div className="grid md:grid-cols-2 gap-6">
@@ -149,31 +408,80 @@ export default function ResultsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {outfitSuggestions.map((outfit, index) => (
-                <div key={index} className="p-3 bg-pink-50 rounded-lg">
-                  <h4 className="font-semibold text-gray-800">{outfit.type}</h4>
-                  <p className="text-sm text-gray-600">{outfit.description}</p>
-                </div>
-              ))}
+              {outfitLoading ? (
+                <div className="text-gray-500">Loading outfit suggestions...</div>
+              ) : outfitError ? (
+                <div className="text-red-500">{outfitError}</div>
+              ) : outfitSuggestions.length === 0 ? (
+                <div className="text-gray-500">No outfit suggestions found.</div>
+              ) : (
+                outfitSuggestions.map((outfit, index) => (
+                  <div
+                    key={index}
+                    className={`p-3 bg-pink-50 rounded-lg cursor-pointer border ${selectedOutfit === outfit ? 'border-pink-500 ring-2 ring-pink-300' : 'border-transparent'}`}
+                    onClick={() => setSelectedOutfit(outfit)}
+                  >
+                    <h4 className="font-semibold text-gray-800">{outfit.type || outfit.name}</h4>
+                    <p className="text-sm text-gray-600">{outfit.description}</p>
+                    {selectedOutfit === outfit && <span className="text-pink-500 text-xs font-bold">Selected</span>}
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
 
-          {/* Conversation Starters */}
+          {/* Nearby Flower Vendors */}
           <Card className="bg-white/90 border-2 border-pink-300 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-800">
-                <MessageCircle className="text-pink-500" size={24} />
-                Conversation Starters
+                <Star className="text-pink-500" size={24} />
+                Nearby Flower Vendors
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {conversationStarters.map((starter, index) => (
-                <div key={index} className="p-3 bg-purple-50 rounded-lg">
-                  <p className="text-gray-700">"{starter}"</p>
-                </div>
-              ))}
+              {flowerLoading ? (
+                <div className="text-gray-500">Loading flower shops...</div>
+              ) : flowerError ? (
+                <div className="text-red-500">{flowerError}</div>
+              ) : flowerVendors.length === 0 ? (
+                <div className="text-gray-500">No flower vendors found nearby.</div>
+              ) : (
+                flowerVendors.map((vendor, index) => (
+                  <div
+                    key={index}
+                    className={`p-3 bg-purple-50 rounded-lg cursor-pointer border ${selectedPlace === vendor ? 'border-pink-500 ring-2 ring-pink-300' : 'border-transparent'}`}
+                    onClick={() => setSelectedPlace(vendor)}
+                  >
+                    <h4 className="font-semibold text-gray-800">{vendor.name}</h4>
+                    <p className="text-sm text-gray-600">{vendor.address}</p>
+                    <p className="text-sm text-gray-600">Distance: {vendor.distance ? `${vendor.distance}m` : "-"}</p>
+                    {selectedPlace === vendor && <span className="text-pink-500 text-xs font-bold">Selected</span>}
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
+        {/* Timeline Section */}
+        <div className="my-8">
+          {timelineLoading && (
+            <div className="text-center text-lg text-gray-500">Generating Timeline...</div>
+          )}
+          {timelineError && <div className="text-red-500 mt-2">{timelineError}</div>}
+          {timeline && timeline.length > 0 && (
+            <div className="mt-6 bg-white/80 rounded-xl shadow-lg p-6">
+              <h3 className="text-xl font-bold mb-4 text-pink-600">Your Personalized Date Timeline</h3>
+              <ol className="space-y-4 list-decimal list-inside">
+                {timeline.map((step: any, idx: number) => (
+                  <li key={idx} className="text-gray-800">
+                    {step}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+        </div>
+
+ 
         </div>
 
         {/* Action Buttons */}
@@ -201,12 +509,49 @@ export default function ResultsPage() {
             <Car size={20} className="mr-2" />
             Book Transportation
           </Button>
-          <Link href="/feedback">
-            <Button variant="outline" className="border-rose-300 text-rose-600 hover:bg-rose-50 bg-transparent transition-transform duration-200 hover:-translate-y-1">
-              <Star size={20} className="mr-2" />
-              Complete Date
-            </Button>
-          </Link>
+          <Button
+            variant="outline"
+            className="border-rose-300 text-rose-600 hover:bg-rose-50 bg-transparent transition-transform duration-200 hover:-translate-y-1"
+            onClick={async () => {
+              // Gather required data
+              if (!selectedPlace) {
+                alert("Please select a place before completing the date.");
+                return;
+              }
+              let mood = localStorage.getItem("mood") || "Romantic";
+              let budget = localStorage.getItem("budget") || "1000";
+              let location = localStorage.getItem("locationType") || "";
+              try {
+                const auth = getAuth();
+                const user = auth.currentUser;
+                if (!user) {
+                  router.push("/auth");
+                  return;
+                }
+                const idToken = user && (await user.getIdToken());
+                const res = await fetch("http://localhost:8000/api/confirmAndStoreData", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json", ...(idToken && { Authorization: `Bearer ${idToken}` }) },
+                  credentials: "include",
+                  body: JSON.stringify({
+                    selectedPlace,
+                    mood,
+                    budget,
+                    location,
+                  }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.message || "Failed to save user preference");
+                // Redirect to feedback page on success
+                router.push("/feedback");
+              } catch (err: any) {
+                alert(err.message || "Failed to save user preference");
+              }
+            }}
+          >
+            <Star size={20} className="mr-2" />
+            Complete Date
+          </Button>
         </div>
 
         {/* Chat Interface */}

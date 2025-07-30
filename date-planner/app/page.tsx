@@ -11,6 +11,7 @@ import { auth } from "@/lib/firebaseAuth"
 import Image from "next/image"
 import LocationButton from "@/components/location_btn"
 
+
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 
@@ -155,8 +156,8 @@ export default function LandingPage() {
   }, []);
 
   const testimonials = [
-    { text: "Meet Me Amore planned the most magical evening! Every detail was perfect 💕", author: "Sarah & Mike" },
-    { text: "The AI suggestions were spot-on. Best date planning app ever! ✨", author: "Emma & Jake" },
+    { text: "Meet Me Amore planned the most magical evening! Every detail was perfect ", author: "Sarah & Mike" },
+    { text: "The AI suggestions were spot-on. Best date planning app ever! ", author: "Emma & Jake" },
     { text: "From outfit to conversation starters, everything was amazing!", author: "Lisa & David" },
   ]
 

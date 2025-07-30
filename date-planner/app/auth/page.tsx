@@ -1,3 +1,4 @@
+// ...existing code...
 "use client"
 
 import type React from "react"
@@ -22,6 +23,7 @@ export default function AuthPage() {
   const [name, setName] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState<string | null>(null)
 
   const createFloatingHeart = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -41,14 +43,31 @@ export default function AuthPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
+    setResult(null);
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
+        router.push("/form");
       } else {
         await createUserWithEmailAndPassword(auth, email, password);
+        // Call backend createUser API as well
+        try {
+          const res = await fetch("/api/createUser", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
+          });
+          const data = await res.json();
+          setResult(JSON.stringify(data, null, 2));
+        } catch (apiErr) {
+          if (apiErr instanceof Error) setResult("API Error: " + apiErr.message);
+          else setResult("Unknown API error");
+        }
         // Optionally update profile with name
+        // After sign up, redirect to sign in page
+        setIsLogin(true);
+        setResult("Account created! Please sign in.");
       }
-      router.push("/form");
     } catch (err: any) {
       setError(err.message || "Authentication failed");
     } finally {
@@ -174,6 +193,7 @@ export default function AuthPage() {
             </div>
 
             {error && <div className="text-red-500 text-sm text-center">{error}</div>}
+            {result && <pre className="bg-gray-100 p-3 rounded text-xs mt-2 overflow-x-auto">{result}</pre>}
 
             <Button
               type="submit"

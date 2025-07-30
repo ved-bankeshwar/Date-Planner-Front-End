@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/app/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/app/ui/radio-group"
@@ -12,46 +12,113 @@ import { Progress } from "@/app/ui/progress"
 import { Heart, ArrowLeft, ArrowRight } from "lucide-react"
 import Link from "next/link"
 
+import { useRouter } from "next/navigation"
+
+
+
 const questions = [
   {
     id: 1,
-    question: "What's your relationship status?",
+    question: "What's your current mood?",
     type: "radio",
-    options: ["Single", "In a relationship", "It's complicated", "Prefer not to say"],
+    options: ["Romantic", "Adventurous", "Relaxed", "Playful"],
   },
   {
     id: 2,
     question: "What's your ideal date budget?",
     type: "text",
-    placeholder: "₹‎ 5000 - ₹‎ 10000",
+    placeholder: "₹‎ 1000 - ₹‎ 10000",
   },
-  {
+{
     id: 3,
-    question: "What type of activities do you enjoy most?",
+    question: "What's your relationship status?",
     type: "radio",
-    options: ["Outdoor adventures", "Cultural experiences", "Food & drinks", "Entertainment", "Relaxing activities"],
+    options: ["First Date", "In a relationship", "Married", "Casual"],
   },
   {
-    id: 4,
-    question: "How would you describe your personality?",
+    id:4,
+    question: "What type of date location do you want?",
     type: "radio",
-    options: ["Outgoing & social", "Quiet & intimate", "Adventurous & spontaneous", "Thoughtful & planned"],
-  },
-  {
-    id: 5,
-    question: "Any specific preferences or things to avoid?",
-    type: "text",
-    placeholder: "Dietary restrictions, accessibility needs, dislikes, etc.",
-  },
+    options: ["Beach", "Mountains", "Restaurant", "Movie"],
+  }
 ]
+
 
 import { useAuth } from "@/lib/useAuth"
 
+// Helper to map answers to field names
+const fieldMap = ["mood", "budget", "location", "status"];
+
 export default function FormPage() {
+  const router = useRouter();
   useAuth(); // Redirects to /auth if not logged in
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<Record<number, string>>({})
   const [floatingHearts, setFloatingHearts] = useState<Array<{ id: number; x: number; y: number }>>([])
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  // Location popup state
+  const [showLocationPopup, setShowLocationPopup] = useState(true);
+  const [locationError, setLocationError] = useState<string | null>(null);
+  // Store lat/lng as state variables
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
+
+
+  // Check geolocation permission on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'permissions' in navigator) {
+      // @ts-ignore
+      navigator.permissions.query({ name: 'geolocation' }).then((result) => {
+        if (result.state === 'granted') {
+          // If already granted, get location immediately
+          if (latitude === null || longitude === null) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                setLatitude(position.coords.latitude);
+                setLongitude(position.coords.longitude);
+                setLocationError(null);
+              },
+              (err) => {
+                setLocationError("Failed to retrieve location.");
+              }
+            );
+          }
+          setShowLocationPopup(false);
+        }
+      });
+    }
+  }, []);
+
+  // When lat/lng is set, close popup
+  useEffect(() => {
+    if (latitude !== null && longitude !== null) {
+      setShowLocationPopup(false);
+    }
+  }, [latitude, longitude]);
+
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError("Geolocation is not supported by your browser.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
+        setLocationError(null);
+      },
+      (err) => {
+        if (err.code === err.PERMISSION_DENIED) {
+          setLocationError("Permission denied. Please allow location access.");
+        } else {
+          setLocationError("Failed to retrieve location.");
+        }
+      }
+    );
+  };
 
   const progress = ((currentQuestion + 1) / questions.length) * 100
 
@@ -90,8 +157,48 @@ export default function FormPage() {
   const hasAnswer = answers[currentQ.id]
   const isLastQuestion = currentQuestion === questions.length - 1
 
+  // Submit handler for form data
+  const handleSubmit = async () => {
+    setSubmitError("");
+    setSubmitSuccess("");
+    setSubmitting(true);
+    // Map answers to correct fields based on new questions
+    const mood = answers[1] || "";
+    const budget = answers[2] || "";
+    const status = answers[3] || "";
+    const locationType = answers[4] || "";
+    // Save to localStorage for use in results page
+    if (typeof window !== "undefined") {
+      localStorage.setItem("mood", mood);
+      localStorage.setItem("budget", budget);
+      localStorage.setItem("status", status);
+      localStorage.setItem("locationType", locationType);
+      if (latitude !== null) localStorage.setItem("latitude", latitude.toString());
+      if (longitude !== null) localStorage.setItem("longitude", longitude.toString());
+    }
+    setSubmitSuccess("Form data saved!");
+    setSubmitting(false);
+    router.push("/results");
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-300 to-rose-300 p-4 relative overflow-hidden">
+      {/* Location popup overlay */}
+      {showLocationPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-sm w-full text-center space-y-4 relative">
+            <h2 className="text-xl font-semibold">Allow Location Access</h2>
+            <p className="text-gray-700">To personalize your date plan, please allow access to your location.</p>
+            <button
+              onClick={handleGetLocation}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            >
+              Get My Location
+            </button>
+            {locationError && <p className="text-red-600">{locationError}</p>}
+          </div>
+        </div>
+      )}
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
         {Array.from({ length: 15 }).map((_, i) => (
@@ -125,7 +232,8 @@ export default function FormPage() {
         </div>
       ))} */}
 
-      <div className="max-w-2xl mx-auto relative z-10">
+      {/* Main form UI, hidden when popup is open */}
+      <div className={`max-w-2xl mx-auto relative z-10${showLocationPopup ? ' pointer-events-none opacity-30 select-none' : ''}`}>
         {/* Progress bar */}
         <div className="mb-8">
           <div className="flex justify-between items-center mb-2 bg-white/10">
@@ -187,14 +295,13 @@ export default function FormPage() {
               </Button>
 
               {isLastQuestion ? (
-                <Link href="/results">
-                  <Button
-                    disabled={!hasAnswer}
-                    className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white disabled:opacity-50"
-                  >
-                    Create My Date Plan 
-                  </Button>
-                </Link>
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!hasAnswer || submitting}
+                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white disabled:opacity-50"
+                >
+                  {submitting ? "Submitting..." : "Create My Date Plan"}
+                </Button>
               ) : (
                 <Button
                   onClick={nextQuestion}
@@ -205,6 +312,13 @@ export default function FormPage() {
                   <ArrowRight size={16} className="ml-2" />
                 </Button>
               )}
+            {/* Show error or success message */}
+            {submitError && (
+              <div className="text-red-500 text-sm text-center mt-4">{submitError}</div>
+            )}
+            {submitSuccess && (
+              <div className="text-green-600 text-sm text-center mt-4">{submitSuccess}</div>
+            )}
             </div>
           </CardContent>
         </Card>
