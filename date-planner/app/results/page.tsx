@@ -193,7 +193,6 @@ export default function ResultsPage() {
         const auth = getAuth();
         const user = auth.currentUser;
         const idToken = user && (await user.getIdToken());
-        alert(idToken);
         const res = await fetch("http://localhost:8000/api/flowerVendor", {
           method: "POST",
           headers: { "Content-Type": "application/json", ...(idToken && { Authorization: `Bearer ${idToken}` }) },
@@ -322,11 +321,11 @@ export default function ResultsPage() {
   }, [selectedPlace, selectedOutfit]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-rose-100 p-4">
+    <div className="min-h-screen bg-[url('/result_bg.svg')] p-4">
       <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold gradient-text mb-4">Your Perfect Date Plan ✨</h1>
+          <h1 className="text-4xl font-bold gradient-text mb-4">Your Perfect Date Plan </h1>
           <p className="text-gray-600">Crafted specially for you by our AI cupid</p>
         </div>
 
@@ -337,7 +336,7 @@ export default function ResultsPage() {
           <div className="text-center text-red-500">{fetchError}</div>
         ) : dateIdea ? (
           <>
-            <Card className="bg-white/90 border-2 border-pink-300 shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+            <Card className="bg-white/60 border-2 border-pink-300 shadow-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
               <CardHeader>
                 <CardTitle className="text-2xl text-center text-gray-800 flex items-center justify-center gap-2">
                   <Heart className="text-pink-500" size={28} />
@@ -438,7 +437,7 @@ export default function ResultsPage() {
         {/* Additional Suggestions */}
         <div className="grid md:grid-cols-2 gap-6">
           {/* Outfit Suggestions */}
-          <Card className="bg-white/90 border-2 border-pink-300 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+          <Card className="bg-white/60 border-2 border-pink-300 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-800">
                 <Shirt className="text-pink-500" size={24} />
@@ -469,7 +468,7 @@ export default function ResultsPage() {
           </Card>
 
           {/* Nearby Flower Vendors */}
-          <Card className="bg-white/90 border-2 border-pink-300 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+          <Card className="bg-white/60 border-2 border-pink-300 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-800">
                 <Star className="text-pink-500" size={24} />
@@ -506,7 +505,7 @@ export default function ResultsPage() {
           )}
           {timelineError && <div className="text-red-500 mt-2">{timelineError}</div>}
           {timeline && timeline.length > 0 && (
-            <div className="mt-6 bg-white/80 rounded-xl shadow-lg p-6">
+            <div className="mt-6 bg-white/50 rounded-xl shadow-lg p-6">
               <h3 className="text-xl font-bold mb-4 text-pink-600">Your Personalized Date Timeline</h3>
               <ol className="space-y-4 list-decimal list-inside">
                 {timeline.map((step: any, idx: number) => (
@@ -594,7 +593,7 @@ export default function ResultsPage() {
 
         {/* Chat Interface */}
         {showChat && (
-          <Card className="bg-white/90 border-2 border-pink-300 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
+          <Card className="bg-white/60 border-2 border-pink-300 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-gray-800">
                 <MessageCircle className="text-pink-500" size={24} />

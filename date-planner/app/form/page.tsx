@@ -182,7 +182,7 @@ export default function FormPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-300 to-rose-300 p-4 relative overflow-hidden">
+    <div className="flex-1 bg-[url('/form_bg.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative">
       {/* Location popup overlay */}
       {showLocationPopup && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
