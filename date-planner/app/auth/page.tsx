@@ -1,4 +1,3 @@
-// ...existing code...
 "use client"
 
 import type React from "react"
@@ -23,7 +22,6 @@ export default function AuthPage() {
   const [name, setName] = useState("")
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState<string | null>(null)
 
   const createFloatingHeart = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -40,43 +38,28 @@ export default function AuthPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError("");
-  setLoading(true);
-  setResult(null);
-  try {
-    if (isLogin) {
-      await signInWithEmailAndPassword(auth, email, password);
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+        // Optionally update profile with name
+      }
       router.push("/form");
-    } else {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Send uid, email, name to backend
-      const res = await fetch("/api/createUser", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ uid: user.uid, email, name }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to create user in backend");
-
-      setResult("Account created! Please sign in.");
-      setIsLogin(true);
+    } catch (err: any) {
+      setError(err.message || "Authentication failed");
+    } finally {
+      setLoading(false);
     }
-  } catch (err: any) {
-    setError(err.message || "Authentication failed");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-200 to-rose-300 flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="bg-[url('/auth_bg.svg')] min-h-screen overflow-hidden h-screen h-[{height}px] w-screen w-[{width}px] bg-cover bg-center relative flex items-center justify-center">
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      {/* <div className="absolute inset-0 overflow-hidden">
         {Array.from({ length: 20 }).map((_, i) => (
           <div
             key={i}
@@ -89,43 +72,36 @@ export default function AuthPage() {
             }}
           >
             {i % 3 === 0 ? (
-              <Heart className="text-pink-400" size={16} />
-            ) : i % 3 === 1 ? (
-              <Sparkles className="text-purple-400" size={14} />
-            ) : (
-              <div className="w-2 h-2 bg-rose-400 rounded-full" />
-            )}
-          </div>
-        ))}
-      </div>
+      //         <Heart className="text-pink-400" size={16} />
+      //       ) : i % 3 === 1 ? (
+      //         <Sparkles className="text-purple-400" size={14} />
+      //       ) : (
+      //         <div className="w-2 h-2 bg-rose-400 rounded-full" />
+      //       )}
+      //     </div>
+      //   ))}
+      // </div> */}
 
-      {/* Floating hearts from interactions */}
-      {/* {floatingHearts.map((heart) => (
-        <div
-          key={heart.id}
-          className="absolute pointer-events-none animate-ping"
-          style={{
-            left: heart.x,
-            top: heart.y,
-            animation: "floatUp 2s ease-out forwards",
-          }}
-        >
-          💕
-        </div>
-      ))} */}
+      // {/* Floating hearts from interactions */}
+      // {/* {floatingHearts.map((heart) => (
+      //   <div
+      //     key={heart.id}
+      //     className="absolute pointer-events-none animate-ping"
+      //     style={{
+      //       left: heart.x,
+      //       top: heart.y,
+      //       animation: "floatUp 2s ease-out forwards",
+      //     }}
+      //   >
+      //     💕
+      //   </div>
+      // ))} */}
 
       <Card className="w-full max-w-md glass-effect bg-white/60 border-pink-200 shadow-2xl relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 via-purple-500/5 to-rose-500/5" />
 
         <CardHeader className="text-center relative z-10">
-          <div className="flex justify-center mb-4">
-            <div className="relative">
-              <Heart className="text-pink-500 animate-pulse" size={48} />
-              <div className="absolute inset-0 animate-ping opacity-30">
-                <Heart className="text-pink-400" size={48} />
-              </div>
-            </div>
-          </div>
+          
           <CardTitle className="text-3xl font-bold gradient-text">
             {isLogin ? "Welcome Back" : "Join DateCraft"}
           </CardTitle>
@@ -191,7 +167,6 @@ export default function AuthPage() {
             </div>
 
             {error && <div className="text-red-500 text-sm text-center">{error}</div>}
-            {result && <pre className="bg-gray-100 p-3 rounded text-xs mt-2 overflow-x-auto">{result}</pre>}
 
             <Button
               type="submit"
