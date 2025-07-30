@@ -3,9 +3,9 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/app/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card"
+import { Textarea } from "@/app/ui/textarea"
 import { Heart, Star, Smile, Meh, Frown } from "lucide-react"
 import Link from "next/link"
 
@@ -46,7 +46,7 @@ export default function FeedbackPage() {
   if (submitted) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-rose-100 flex items-center justify-center p-4">
-        <Card className="glass-effect border-pink-200 shadow-2xl max-w-md w-full text-center">
+        <Card className="glass-effect border-pink-200 shadow-2xl max-w-md w-full text-center transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
           <CardContent className="p-8">
             <div className="mb-6">
               <Heart className="text-pink-500 mx-auto animate-pulse" size={64} />
@@ -70,13 +70,13 @@ export default function FeedbackPage() {
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-rose-100 p-4">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold gradient-text mb-4">How Was Your Date? ✨</h1>
+          <h1 className="text-4xl font-bold gradient-text mb-4">How Was Your Date? </h1>
           <p className="text-gray-600">Help us make your next date even more perfect!</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Rating */}
-          <Card className="glass-effect border-pink-200 shadow-xl">
+          <Card className="glass-effect border-pink-200 shadow-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <CardHeader>
               <CardTitle className="text-center text-gray-800">Overall Experience</CardTitle>
             </CardHeader>
@@ -106,7 +106,7 @@ export default function FeedbackPage() {
           </Card>
 
           {/* Highlights */}
-          <Card className="glass-effect border-pink-200 shadow-xl">
+          <Card className="glass-effect border-pink-200 shadow-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <CardHeader>
               <CardTitle className="text-gray-800">What did you love most?</CardTitle>
             </CardHeader>
@@ -131,7 +131,7 @@ export default function FeedbackPage() {
           </Card>
 
           {/* Detailed Feedback */}
-          <Card className="glass-effect border-pink-200 shadow-xl">
+          <Card className="glass-effect border-pink-200 shadow-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
             <CardHeader>
               <CardTitle className="text-gray-800">Tell us more (optional)</CardTitle>
             </CardHeader>
@@ -152,7 +152,7 @@ export default function FeedbackPage() {
               disabled={rating === 0}
               className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-3 text-lg font-semibold disabled:opacity-50"
             >
-              Share Feedback 💕
+              Share Feedback 
             </Button>
           </div>
         </form>
