@@ -40,40 +40,38 @@ export default function AuthPage() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    setResult(null);
-    try {
-      if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password);
-        router.push("/form");
-      } else {
-        await createUserWithEmailAndPassword(auth, email, password);
-        // Call backend createUser API as well
-        try {
-          const res = await fetch("/api/createUser", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
-          });
-          const data = await res.json();
-          setResult(JSON.stringify(data, null, 2));
-        } catch (apiErr) {
-          if (apiErr instanceof Error) setResult("API Error: " + apiErr.message);
-          else setResult("Unknown API error");
-        }
-        // Optionally update profile with name
-        // After sign up, redirect to sign in page
-        setIsLogin(true);
-        setResult("Account created! Please sign in.");
-      }
-    } catch (err: any) {
-      setError(err.message || "Authentication failed");
-    } finally {
-      setLoading(false);
+  e.preventDefault();
+  setError("");
+  setLoading(true);
+  setResult(null);
+  try {
+    if (isLogin) {
+      await signInWithEmailAndPassword(auth, email, password);
+      router.push("/form");
+    } else {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Send uid, email, name to backend
+      const res = await fetch("/api/createUser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uid: user.uid, email, name }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to create user in backend");
+
+      setResult("Account created! Please sign in.");
+      setIsLogin(true);
     }
-  };
+  } catch (err: any) {
+    setError(err.message || "Authentication failed");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-200 to-rose-300 flex items-center justify-center p-4 relative overflow-hidden">

@@ -1,8 +1,8 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
+import { getAuth } from "firebase/auth"
 import { Button } from "@/app/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/app/ui/card"
 import { Textarea } from "@/app/ui/textarea"
@@ -35,12 +35,60 @@ export default function FeedbackPage() {
   ]
 
   const toggleHighlight = (highlight: string) => {
-    setHighlights((prev) => (prev.includes(highlight) ? prev.filter((h) => h !== highlight) : [...prev, highlight]))
+    setHighlights((prev) =>
+      prev.includes(highlight)
+        ? prev.filter((h) => h !== highlight)
+        : [...prev, highlight]
+    )
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setSubmitted(true)
+
+    try {
+      const auth = getAuth()
+      const user = auth.currentUser
+
+      if (!user) {
+        alert("Please log in to submit feedback.")
+        return
+      }
+
+      const uid = user.uid
+      const placeId = localStorage.getItem("placeId")
+
+      if (!placeId) {
+        alert("Missing place information.")
+        return
+      }
+
+      const res = await fetch("/api/review", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          uid,
+          placeId,
+          comment: feedback,
+          rating,
+          highlights,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        console.error("Error submitting feedback:", data.error)
+        alert("Failed to submit feedback. Please try again.")
+        return
+      }
+
+      setSubmitted(true)
+    } catch (err) {
+      console.error("Unexpected error:", err)
+      alert("Something went wrong. Please try again.")
+    }
   }
 
   if (submitted) {
@@ -70,7 +118,7 @@ export default function FeedbackPage() {
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-50 to-rose-100 p-4">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold gradient-text mb-4">How Was Your Date? </h1>
+          <h1 className="text-4xl font-bold gradient-text mb-4">How Was Your Date?</h1>
           <p className="text-gray-600">Help us make your next date even more perfect!</p>
         </div>
 
@@ -152,7 +200,7 @@ export default function FeedbackPage() {
               disabled={rating === 0}
               className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-3 text-lg font-semibold disabled:opacity-50"
             >
-              Share Feedback 
+              Share Feedback
             </Button>
           </div>
         </form>

@@ -12,12 +12,6 @@ import { getAuth } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
 
-
-
-
-
-
-
 export default function ResultsPage() {
   useAuth(); // Redirects to /auth if not logged in
   const [chatMessages, setChatMessages] = useState<Array<{ type: "user" | "ai"; message: string }>>([])
@@ -57,7 +51,7 @@ export default function ResultsPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to fetch one-liner");
-      setQuippyLine(data.line || data.message || "Here's a fun line for your date!");
+      setQuippyLine(data.quip || data.message || "Here's a fun line for your date!");
     } catch (err: any) {
       setQuippyError(err.message || "Failed to fetch one-liner");
     } finally {
@@ -171,7 +165,7 @@ export default function ResultsPage() {
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "Failed to fetch outfit suggestions");
-        setOutfitSuggestions(data.results || []);
+        setOutfitSuggestions(data.images || []);
       } catch (err: any) {
         setOutfitError(err.message || "Failed to fetch outfit suggestions");
       } finally {
@@ -218,29 +212,73 @@ export default function ResultsPage() {
     fetchFlowers();
   }, []);
 
-  const handleChatSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!chatInput.trim()) return
+  const handleChatSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!chatInput.trim()) return;
 
-    setChatMessages((prev) => [...prev, { type: "user", message: chatInput }])
+  setChatMessages((prev) => [...prev, { type: "user", message: chatInput }]);
 
-    // Simulate AI response
-    setTimeout(() => {
-      setChatMessages((prev) => [
-        ...prev,
-        {
-          type: "ai",
-          message: "I'd be happy to help you adjust your date plan! What specific changes would you like to make?",
-        },
-      ])
-    }, 1000)
+  try {
+    const auth = getAuth();
+    const user = auth.currentUser;
+    const idToken = user && (await user.getIdToken());
 
-    setChatInput("")
+    let mood = localStorage.getItem("mood") || "Romantic";
+    let budget = localStorage.getItem("budget") || "1000";
+    let occasion = localStorage.getItem("status") || "Anniversary";
+    let locationType = localStorage.getItem("locationType") || "cafe";
+    let latitude = localStorage.getItem("latitude") || "19.076";
+    let longitude = localStorage.getItem("longitude") || "72.8777";
+
+    const res = await fetch("http://localhost:8000/api/chatLogic", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(idToken && { Authorization: `Bearer ${idToken}` }),
+      },
+      credentials: "include",
+      body: JSON.stringify({
+        isSatisfied: false, // You can toggle this based on user intent
+        selectedPlace,
+        mood,
+        budget,
+        occasion,
+        locationType,
+        latitude: parseFloat(latitude),
+        longitude: parseFloat(longitude),
+      }),
+    });
+
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Chat failed");
+
+    setChatMessages((prev) => [
+      ...prev,
+      { type: "ai", message: data.message || "Here's something to consider!" },
+    ]);
+
+    // You could update morePlaces here, e.g.
+    if (data.morePlaces) {
+      // update your place list if you show new options
+    }
+
+  } catch (err: any) {
+    setChatMessages((prev) => [
+      ...prev,
+      {
+        type: "ai",
+        message:
+          err.message || "Hmm, something went wrong while refining the plan!",
+      },
+    ]);
   }
+
+  setChatInput("");
+};
+
 
   // Automatically generate timeline when both selectedPlace and selectedOutfit are set
   
-
    useEffect(() => {
     const generateTimeline = async () => {
       if (!selectedPlace || !selectedOutfit) return;
